@@ -11,9 +11,10 @@ namespace TEST.Services
     {
         public UniversityService(HttpClient httpClient) : base(httpClient) { }
 
-        public async Task<IEnumerable<University>> GetUniversities()
+        public async Task<IEnumerable<University>> GetUniversities(string country)
         {
-            return await GetMethodList<University>($"/search?country=Korea,+Republic+of");
+            //return await GetMethodList<University>($"/search?country=Korea,+Republic+of");
+            return await GetMethodList<University>($"/search?country={country}");
         }
     }
 }

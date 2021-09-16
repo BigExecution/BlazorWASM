@@ -8,6 +8,6 @@ namespace TEST.Services
 {
     public interface IUniversityService
     {
-        Task<IEnumerable<University>> GetUniversities();
+        Task<IEnumerable<University>> GetUniversities(string country);
     }
 }

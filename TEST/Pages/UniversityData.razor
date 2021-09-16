@@ -5,6 +5,12 @@
 <h1>Universities of Korea</h1>
 
 <p>This component demonstrates fetching data from the server.</p>
+<select id="country" @onchange="@(e => GetUniversitiesByCountry(e))">
+    <option>Country</option>
+    <option value="Korea,+Republic+of">Korea, Republic of</option>
+    <option value="China">China</option>
+    <option value="Japan">Japan</option>
+</select>
 
 @if (universities == null)
 {
@@ -42,6 +48,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        universities = await UniversityService.GetUniversities();
+        //universities = await UniversityService.GetUniversities();
+    }
+
+    protected async Task GetUniversitiesByCountry(ChangeEventArgs e)
+    {
+        string country = e.Value.ToString();
+        if (!string.IsNullOrEmpty(country)) {
+            universities = await UniversityService.GetUniversities(country);
+        }
     }
 }
