@@ -1,16 +1,56 @@
 ﻿@page "/counter"
+@using TEST.Components
+<div class="content">
+    <h1>Counter</h1>
+    <p>Current count: @currentCount</p>
+    <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+    <button class="btn btn-primary" @onclick="IncrementCount2">Click me 2</button>
+</div>
 
-<h1>Counter</h1>
+@if (DeleteAlert)
+{
+    <LayerAlertComponent Value="@layerPopupComment" OnClose="@OnLayerAlertClose"></LayerAlertComponent>
+}
 
-<p>Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
+@if (DeleteConfirm)
+{
+    <LayerConfirmComponent Value="@layerPopupComment" OnClose="@OnLayerConfirmClose"></LayerConfirmComponent>
+}
 @code {
     private int currentCount = 0;
+    protected string layerPopupComment = string.Empty;
+    public bool DeleteAlert { get; set; }
+    public bool DeleteConfirm { get; set; }
 
     private void IncrementCount()
     {
         currentCount++;
+        layerPopupComment = "숫자가 1 증가하였습니다.";
+        DeleteAlert = true;
+    }
+
+    private void IncrementCount2()
+    {
+        layerPopupComment = "숫자를 +1 하시겠습니까?";
+        DeleteConfirm = true;
+    }
+
+    protected void OnLayerAlertClose()
+    {
+        DeleteAlert = false;
+        StateHasChanged();
+    }
+
+    protected void OnLayerConfirmClose(bool accepted)
+    {
+        DeleteConfirm = false;
+
+        if (accepted)
+        {
+            currentCount++;
+        }
+
+        StateHasChanged();
     }
 }
