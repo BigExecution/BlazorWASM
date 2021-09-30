@@ -1,5 +1,8 @@
 ﻿@page "/fetchdata"
+@using System.Collections
+@inject NavigationManager NavigationManager
 @inject HttpClient Http
+@inject IJSRuntime _js
 
 <h1>Weather forecast</h1>
 
@@ -32,14 +35,33 @@ else
             }
         </tbody>
     </table>
+    <div id="chart_div" style="height: 320px;"></div>
 }
 
 @code {
     private WeatherForecast[] forecasts;
+    private Task<IJSObjectReference> _moduleGraph;
+    private Task<IJSObjectReference> ModuleGraph => _moduleGraph ??= _js.InvokeAsync<IJSObjectReference>("import", "./js/graph.js").AsTask();
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        Http.BaseAddress = new Uri(NavigationManager.BaseUri);
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("/sample-data/weather.json");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var moduleGraph = await ModuleGraph;
+
+        ArrayList points = new ArrayList();
+        foreach (var item in forecasts)
+        {
+
+            object[] array1 = new object[] { item.Date.ToShortDateString(), item.TemperatureC, item.TemperatureF };
+            points.Add(array1);
+        }
+        await moduleGraph.InvokeVoidAsync("drawGrowthGraph", points);
+
     }
 
     public class WeatherForecast
